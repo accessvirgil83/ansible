@@ -1,0 +1,23 @@
+---
+- name: Update hosts and configure timezone to Moscow
+  hosts: all
+  become: yes  # Использовать привилегии суперпользователя
+  tasks:
+    - name: Update the package list and upgrade all packages
+      apt:
+        update_cache: yes
+        upgrade: dist  # Полное обновление пакетов
+      when: ansible_os_family == "Debian"
+
+    - name: Update the package list and upgrade all packages
+      dnf:
+        name: '*'
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+    - name: Set the timezone to Moscow
+      timezone:
+        name: Europe/Moscow
+
+    - name: Ensure systemd-timedatectl reflection is enabled
+      command: timedatectl set-ntp true
